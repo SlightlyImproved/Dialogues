@@ -9,6 +9,8 @@
 3. Display the conversation option numbers.
 4. Remove the dashes and make the target name more prominent.
 
+[Get it free!](http://www.esoui.com/downloads/info1264-SlightlyImprovedDialogues.html)
+
 ## Change log
 
 See [CHANGELOG.bbcode](CHANGELOG.bbcode).
