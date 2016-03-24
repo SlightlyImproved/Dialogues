@@ -1,4 +1,4 @@
--- SlightlyImprovedDialogues 1.1.0 (Jan 6 2015)
+-- SlightlyImprovedDialogues 1.1.1 (Mar 23 2016)
 -- Licensed under CC BY-NC-SA 4.0
 
 SID = "SlightlyImprovedDialogues"
@@ -45,13 +45,20 @@ local function ChangeTargetTitle()
     ZO_InteractWindowTargetAreaTitle:SetFont("ZoFontCallout")
 end
 
-local function AddOptionsNumbers()
-    local number = 1
-    for _, control in ipairs(INTERACTION.optionControls) do
-        local text = control:GetText()
-        if text ~= "" then
-            control:SetText(number..". "..text)
-            number = number + 1
+local function OverrideOptionsSetText()
+    for index, control in ipairs(INTERACTION.optionControls) do
+        local setText = control.SetText
+        function control:SetText(text)
+            local previousOptionsWithText = 0
+            d(index)
+            for i = 1, index do
+                d(INTERACTION.optionControls[i])
+                if INTERACTION.optionControls[i].optionText ~= "" then
+                    previousOptionsWithText = previousOptionsWithText + 1
+                end
+            end
+            d("-")
+            setText(self, previousOptionsWithText..". "..text)
         end
     end
 end
@@ -68,7 +75,6 @@ local function SlightlyImproveDialogue(eventCode, ...)
     d(eventNames[eventCode])
 
     ChangeTargetTitle()
-    AddOptionsNumbers()
 end
 
 EVENT_MANAGER:RegisterForEvent(SID, EVENT_ADD_ON_LOADED, function(eventCode, addOnName)
@@ -77,6 +83,7 @@ EVENT_MANAGER:RegisterForEvent(SID, EVENT_ADD_ON_LOADED, function(eventCode, add
 
         ChangeOptionsHighlight()
         ChangeBackgrounOffsetX()
+        OverrideOptionsSetText()
 
         EVENT_MANAGER:RegisterForEvent(SID, EVENT_CHATTER_BEGIN, SlightlyImproveDialogue)
         EVENT_MANAGER:RegisterForEvent(SID, EVENT_QUEST_OFFERED, SlightlyImproveDialogue)
