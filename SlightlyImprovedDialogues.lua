@@ -1,7 +1,7 @@
 -- SlightlyImprovedDialogues 1.1.1 (Mar 23 2016)
 -- Licensed under CC BY-NC-SA 4.0
 
-SID = "SlightlyImprovedDialogues"
+local SID = "SlightlyImprovedDialogues"
 
 -- Uncomment to prevent debug messages
 local function d() end
@@ -73,7 +73,6 @@ local eventNames =
 
 local function SlightlyImproveDialogue(eventCode, ...)
     d(eventNames[eventCode])
-
     ChangeTargetTitle()
 end
 
