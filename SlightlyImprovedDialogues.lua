@@ -1,4 +1,4 @@
--- SlightlyImprovedDialogues 1.1.1 (Mar 23 2016)
+-- SlightlyImprovedDialogues 1.1.2 (May 31 2016)
 -- Licensed under CC BY-NC-SA 4.0
 
 local SID = "SlightlyImprovedDialogues"
