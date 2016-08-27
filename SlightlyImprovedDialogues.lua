@@ -1,5 +1,5 @@
--- SlightlyImprovedDialogues 1.1.2 (May 31 2016)
--- Licensed under CC BY-NC-SA 4.0
+-- SlightlyImprovedDialogues 1.1.3 (Aug 27 2016)
+-- Licensed under MIT © 2016 Arthur Corenzan
 
 local SID = "SlightlyImprovedDialogues"
 
@@ -33,7 +33,7 @@ local function ChangeOptionsHighlight()
     highlightBackground:SetTexture("esoui\\art\\buttons\\gamepad\\inline_controllerbkg_darkgrey-center.dds")
     highlightBackground:SetTextureCoords(0.5, 1, 0, 1)
     highlightBackground:SetAlpha(0.75)
-    highlightBackground:SetBlendMode(TEX_BLEND_MODE_ADD)
+    highlightBackground:SetBlendMode(TEX_BLEND_MODE_ALPHA)
     highlightBackground:SetAnchor(TOPLEFT, ZO_InteractWindowPlayerAreaHighlight, nil, -CHATTER_OPTION_INDENT + BACKGROUND_OFFSETX, -2)
     highlightBackground:SetAnchor(BOTTOMRIGHT, ZO_InteractWindowPlayerAreaHighlight, nil, 0, 3)
 end

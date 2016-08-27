@@ -1,6 +1,6 @@
-## APIVersion: 100015
+## APIVersion: 100016
 ## Title: Slightly Improved™ Dialogues
-## Version: 1.1.2
-## License: CC BY-NC-SA 4.0
+## Version: 1.1.3
+## License: MIT
 
 SlightlyImprovedDialogues.lua
