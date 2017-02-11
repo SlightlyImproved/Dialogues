@@ -47,31 +47,35 @@ local function ChangeTargetTitle()
 end
 
 local function OverrideOptionsSetText()
-    for index, control in ipairs(INTERACTION.optionControls) do
-        local setText = control.SetText
-        function control:SetText(text)
+    for index, label in ipairs(INTERACTION.optionControls) do
+        local setText = label.SetText
+        function label:SetText(text)
             local previousOptionsWithText = 0
-            d(index)
             for i = 1, index do
-                d(INTERACTION.optionControls[i])
                 if INTERACTION.optionControls[i].optionText ~= "" then
                     previousOptionsWithText = previousOptionsWithText + 1
                 end
             end
-            d("-")
             setText(self, previousOptionsWithText..". "..text)
         end
     end
 end
 
+local function ClearSelectedChatterOption()
+    if INTERACTION.currentMouseLabel ~= nil then
+        ZO_ChatterOption_MouseExit(INTERACTION.currentMouseLabel)
+    end
+end
+
 local function HookSelectChatterOptionByIndex()
-    local selectChatterOptionByIndex = INTERACTION.SelectChatterOptionByIndex
-    -- Override esoui/ingame/interactwindow/keyboard/interactwindow_keyboard.lua:233
+    local SelectChatterOptionByIndex = INTERACTION.SelectChatterOptionByIndex
+
+    -- Source at esoui/ingame/interactwindow/keyboard/interactwindow_keyboard.lua:233
     function INTERACTION:SelectChatterOptionByIndex(optionIndex)
         local label = INTERACTION.optionControls[optionIndex]
         if label.isImportant then
-            if INTERACTION.currentMouseLabel == label then
-                selectChatterOptionByIndex(self, optionIndex)
+            if (INTERACTION.currentMouseLabel == label) then
+                SelectChatterOptionByIndex(self, optionIndex)
             else
                 if INTERACTION.currentMouseLabel ~= nil then
                     ZO_ChatterOption_MouseExit(INTERACTION.currentMouseLabel)
@@ -79,7 +83,7 @@ local function HookSelectChatterOptionByIndex()
                 ZO_ChatterOption_MouseEnter(label)
             end
         else
-            selectChatterOptionByIndex(self, optionIndex)
+            SelectChatterOptionByIndex(self, optionIndex)
         end
     end
 end
@@ -107,6 +111,7 @@ local function OnAddOnLoaded(event, addOnName)
 
         local function SlightlyImproveDialogue(eventCode, ...)
             ChangeTargetTitle()
+            ClearSelectedChatterOption()
         end
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CHATTER_BEGIN, SlightlyImproveDialogue)
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_QUEST_OFFERED, SlightlyImproveDialogue)
