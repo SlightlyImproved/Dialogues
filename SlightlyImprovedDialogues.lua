@@ -1,10 +1,11 @@
 -- SlightlyImprovedDialogues 1.1.3 (Aug 27 2016)
 -- Licensed under MIT © 2016 Arthur Corenzan
 
-local SID = "SlightlyImprovedDialogues"
+local NAMESPACE = "SlightlyImprovedDialogues"
 
 -- Uncomment to prevent debug messages
-local function d() end
+local function d()  end
+local function df() end
 
 -- esoui\ingame\interactwindow\keyboard\interactwindow_keyboard.lua:2
 local CHATTER_OPTION_INDENT = 30
@@ -63,6 +64,26 @@ local function OverrideOptionsSetText()
     end
 end
 
+local function HookSelectChatterOptionByIndex()
+    local selectChatterOptionByIndex = INTERACTION.SelectChatterOptionByIndex
+    -- Override esoui/ingame/interactwindow/keyboard/interactwindow_keyboard.lua:233
+    function INTERACTION:SelectChatterOptionByIndex(optionIndex)
+        local label = INTERACTION.optionControls[optionIndex]
+        if label.isImportant then
+            if INTERACTION.currentMouseLabel == label then
+                selectChatterOptionByIndex(self, optionIndex)
+            else
+                if INTERACTION.currentMouseLabel ~= nil then
+                    ZO_ChatterOption_MouseExit(INTERACTION.currentMouseLabel)
+                end
+                ZO_ChatterOption_MouseEnter(label)
+            end
+        else
+            selectChatterOptionByIndex(self, optionIndex)
+        end
+    end
+end
+
 local eventNames =
 {
     [EVENT_CHATTER_BEGIN] = "EVENT_CHATTER_BEGIN",
@@ -76,17 +97,18 @@ local function SlightlyImproveDialogue(eventCode, ...)
     ChangeTargetTitle()
 end
 
-EVENT_MANAGER:RegisterForEvent(SID, EVENT_ADD_ON_LOADED, function(eventCode, addOnName)
-    if addOnName == SID then
-        EVENT_MANAGER:UnregisterForEvent(SID, EVENT_ADD_ON_LOADED)
+EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_ADD_ON_LOADED, function(eventCode, addOnName)
+    if addOnName == NAMESPACE then
+        EVENT_MANAGER:UnregisterForEvent(NAMESPACE, EVENT_ADD_ON_LOADED)
 
         ChangeOptionsHighlight()
         ChangeBackgrounOffsetX()
         OverrideOptionsSetText()
+        HookSelectChatterOptionByIndex()
 
-        EVENT_MANAGER:RegisterForEvent(SID, EVENT_CHATTER_BEGIN, SlightlyImproveDialogue)
-        EVENT_MANAGER:RegisterForEvent(SID, EVENT_QUEST_OFFERED, SlightlyImproveDialogue)
-        EVENT_MANAGER:RegisterForEvent(SID, EVENT_QUEST_COMPLETE_DIALOG, SlightlyImproveDialogue)
-        EVENT_MANAGER:RegisterForEvent(SID, EVENT_CONVERSATION_UPDATED, SlightlyImproveDialogue)
+        EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CHATTER_BEGIN, SlightlyImproveDialogue)
+        EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_QUEST_OFFERED, SlightlyImproveDialogue)
+        EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_QUEST_COMPLETE_DIALOG, SlightlyImproveDialogue)
+        EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CONVERSATION_UPDATED, SlightlyImproveDialogue)
     end
 end)
