@@ -1,4 +1,4 @@
--- SlightlyImprovedDialogues 1.1.3 (Aug 27 2016)
+-- Slightly Improved™ Dialogues 1.1.3 (Aug 27 2016)
 -- Licensed under MIT © 2016 Arthur Corenzan
 
 local NAMESPACE = "SlightlyImprovedDialogues"
@@ -84,31 +84,43 @@ local function HookSelectChatterOptionByIndex()
     end
 end
 
-local eventNames =
-{
-    [EVENT_CHATTER_BEGIN] = "EVENT_CHATTER_BEGIN",
-    [EVENT_CONVERSATION_UPDATED] = "EVENT_CONVERSATION_UPDATED",
-    [EVENT_QUEST_OFFERED] = "EVENT_QUEST_OFFERED",
-    [EVENT_QUEST_COMPLETE_DIALOG] = "EVENT_QUEST_COMPLETE_DIALOG",
+local keepLockedCamera = {
+    [INTERACTION_CRAFT] = true,
+    [INTERACTION_DYE_STATION] = true,
+    [INTERACTION_LOCKPICK] = true,
+    [INTERACTION_SIEGE] = true,
+    [INTERACTION_FURNITURE] = true,
 }
 
-local function SlightlyImproveDialogue(eventCode, ...)
-    d(eventNames[eventCode])
-    ChangeTargetTitle()
-end
+local defaultSavedVars = {
+    unlockCamera = true,
+}
 
-EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_ADD_ON_LOADED, function(eventCode, addOnName)
-    if addOnName == NAMESPACE then
-        EVENT_MANAGER:UnregisterForEvent(NAMESPACE, EVENT_ADD_ON_LOADED)
+local function OnAddOnLoaded(event, addOnName)
+    if (addOnName == NAMESPACE) then
+        local savedVars = ZO_SavedVars:New(NAMESPACE.."_SavedVars", 1, nil, defaultSavedVars)
 
         ChangeOptionsHighlight()
         ChangeBackgrounOffsetX()
         OverrideOptionsSetText()
         HookSelectChatterOptionByIndex()
 
+        local function SlightlyImproveDialogue(eventCode, ...)
+            ChangeTargetTitle()
+        end
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CHATTER_BEGIN, SlightlyImproveDialogue)
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_QUEST_OFFERED, SlightlyImproveDialogue)
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_QUEST_COMPLETE_DIALOG, SlightlyImproveDialogue)
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CONVERSATION_UPDATED, SlightlyImproveDialogue)
+
+        local function OnGameCameraDeactivated()
+            if savedVars.unlockCamera and not keepLockedCamera[GetInteractionType()] then
+                SetInteractionUsingInteractCamera(false)
+            end
+        end
+        EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_GAME_CAMERA_DEACTIVATED, OnGameCameraDeactivated)
+
+        CALLBACK_MANAGER:FireCallbacks(NAMESPACE.."_OnAddOnLoaded", savedVars)
     end
-end)
+end
+EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
