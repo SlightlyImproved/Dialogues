@@ -1,10 +1,6 @@
 # Slightly Improved™ Dialogues
 
-> [ESO](http://www.elderscrollsonline.com) add-on to improve the conversation screen.
-
-## Download
-
-You can [get the last version](http://www.esoui.com/downloads/info1264-SlightlyImprovedDialogues.html) for free on ESOUI.
+> Elder Scrolls Online add-on to improve the conversation scene.
 
 ## About
 
@@ -17,6 +13,8 @@ You can [get the last version](http://www.esoui.com/downloads/info1264-SlightlyI
 
 See [CHANGELOG.bbcode](CHANGELOG.bbcode).
 
-## License
+## Legal
 
-Licensed under [MIT](LICENSE).
+Add-on licensed under [MIT](LICENSE) © 2017 Arthur Corenzan.
+
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved. Read the [full add-on terms](https://account.elderscrollsonline.com/add-on-terms).
