@@ -67,6 +67,16 @@ local function ClearSelectedChatterOption()
     end
 end
 
+local function GetImportantChatterOptions()
+    local options = {}
+    for index, label in ipairs(INTERACTION.optionControls) do
+        if label.isImportant then
+            table.insert(options, label)
+        end
+    end
+    return options
+end
+
 local function HookSelectChatterOptionByIndex()
     local SelectChatterOptionByIndex = INTERACTION.SelectChatterOptionByIndex
 
@@ -74,7 +84,7 @@ local function HookSelectChatterOptionByIndex()
     function INTERACTION:SelectChatterOptionByIndex(optionIndex)
         local label = INTERACTION.optionControls[optionIndex]
         if label.isImportant then
-            if (INTERACTION.currentMouseLabel == label) then
+            if (INTERACTION.currentMouseLabel == label or #GetImportantChatterOptions() == 1) then
                 SelectChatterOptionByIndex(self, optionIndex)
             else
                 if INTERACTION.currentMouseLabel ~= nil then
