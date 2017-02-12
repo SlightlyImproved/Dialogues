@@ -18,7 +18,7 @@ local options =
 {
     {
         type = "checkbox",
-        name = "Unlocked Camera",
+        name = "Unlocked camera",
         tooltip = "Prevent the game from locking the camera on the NPC you're talking to.",
         getFunc = function() return settings.unlockCamera end,
         setFunc = function(value) settings.unlockCamera = value end,
