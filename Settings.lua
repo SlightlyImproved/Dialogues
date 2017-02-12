@@ -1,4 +1,4 @@
--- Slightly Improved™ Dialogues 1.2.0 (Feb 11 2017)
+-- Slightly Improved™ Dialogues 1.2.1 (Feb 11 2017)
 -- Licensed under MIT © 2017 Arthur Corenzan
 
 local NAMESPACE = "SlightlyImprovedDialogues"
