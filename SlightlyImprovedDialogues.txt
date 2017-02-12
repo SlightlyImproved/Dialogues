@@ -2,6 +2,7 @@
 ## Title: Slightly Improved™ Dialogues
 ## Version: 1.2.0
 ## License: MIT
+## SavedVariables: SlightlyImprovedDialogues_SavedVars
 
 LibStub/LibStub.lua
 
