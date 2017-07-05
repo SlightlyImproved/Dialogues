@@ -8,6 +8,7 @@ local function d()  end
 local function df() end
 
 -- esoui\ingame\interactwindow\keyboard\interactwindow_keyboard.lua:2
+local SEEN_PLAYER_OPTION_COLOR = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_GENERAL, INTERFACE_GENERAL_COLOR_DISABLED))
 local CHATTER_OPTION_INDENT = 30
 local BACKGROUND_OFFSETX = -40
 local BACKGROUND_HEIGHT = 120
@@ -67,6 +68,13 @@ local function ClearSelectedChatterOption()
     end
 end
 
+local function FlagGoodbyeAsChosenBefore()
+    local option = INTERACTION.optionControls[INTERACTION.optionCount]
+    if (option.optionType == CHATTER_GOODBYE) then
+        option:SetColor(SEEN_PLAYER_OPTION_COLOR:UnpackRGBA())
+    end
+end
+
 local function GetImportantChatterOptions()
     local options = {}
     for index, label in ipairs(INTERACTION.optionControls) do
@@ -122,6 +130,7 @@ local function OnAddOnLoaded(event, addOnName)
         local function SlightlyImproveDialogue(eventCode, ...)
             ChangeTargetTitle()
             ClearSelectedChatterOption()
+            FlagGoodbyeAsChosenBefore()
         end
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CHATTER_BEGIN, SlightlyImproveDialogue)
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_QUEST_OFFERED, SlightlyImproveDialogue)
