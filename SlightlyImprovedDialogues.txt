@@ -1,6 +1,6 @@
 ## APIVersion: 100019
 ## Title: Slightly Improved™ Dialogues
-## Version: 1.2.1
+## Version: 1.2.2
 ## License: MIT
 ## SavedVariables: SlightlyImprovedDialogues_SavedVars
 
