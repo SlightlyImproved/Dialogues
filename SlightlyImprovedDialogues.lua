@@ -68,10 +68,12 @@ local function ClearSelectedChatterOption()
     end
 end
 
-local function FlagGoodbyeAsChosenBefore()
-    local option = INTERACTION.optionControls[INTERACTION.optionCount]
-    if (option.optionType == CHATTER_GOODBYE) then
-        option:SetColor(SEEN_PLAYER_OPTION_COLOR:UnpackRGBA())
+local function FlagGoodbyeAsChosenBefore(goodbyeAlwaysSeen)
+    if goodbyeAlwaysSeen then
+        local option = INTERACTION.optionControls[INTERACTION.optionCount]
+        if (option.optionType == CHATTER_GOODBYE) then
+            option:SetColor(SEEN_PLAYER_OPTION_COLOR:UnpackRGBA())
+        end
     end
 end
 
@@ -116,6 +118,7 @@ local keepLockedCamera = {
 
 local defaultSavedVars = {
     unlockCamera = true,
+    goodbyeAlwaysSeen = true,
 }
 
 local function OnAddOnLoaded(event, addOnName)
@@ -130,7 +133,7 @@ local function OnAddOnLoaded(event, addOnName)
         local function SlightlyImproveDialogue(eventCode, ...)
             ChangeTargetTitle()
             ClearSelectedChatterOption()
-            FlagGoodbyeAsChosenBefore()
+            FlagGoodbyeAsChosenBefore(savedVars.goodbyeAlwaysSeen)
         end
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CHATTER_BEGIN, SlightlyImproveDialogue)
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_QUEST_OFFERED, SlightlyImproveDialogue)

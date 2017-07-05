@@ -22,6 +22,12 @@ local options =
         tooltip = "Prevent the game from locking the camera on the NPC you're talking to.",
         getFunc = function() return settings.unlockCamera end,
         setFunc = function(value) settings.unlockCamera = value end,
+    }, {
+        type = "checkbox",
+        name = "Goodbye greyed out by default",
+        tooltip = "Make the goodbye option always appear faded.",
+        getFunc = function() return settings.goodbyeAlwaysSeen end,
+        setFunc = function(value) settings.goodbyeAlwaysSeen = value end,
     },
 }
 
