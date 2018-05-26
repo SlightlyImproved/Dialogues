@@ -28,6 +28,12 @@ local options =
         tooltip = "Make the goodbye option always appear faded.",
         getFunc = function() return settings.goodbyeAlwaysSeen end,
         setFunc = function(value) settings.goodbyeAlwaysSeen = value end,
+    }, {
+        type = "checkbox",
+        name = "Prefix with option number",
+        tooltip = "Add the corresponding number before each option in the dialogue.",
+        getFunc = function() return settings.addNumberPrefix end,
+        setFunc = function(value) settings.addNumberPrefix = value end,
     },
 }
 

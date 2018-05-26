@@ -28,23 +28,25 @@ local function hookInteractionPopulateChatterOption(savedVars)
         local optionIndex = ...
         local optionControl = INTERACTION.optionControls[optionIndex]
 
-        -- Add number prefix to static options.
-        optionControl:SetText(optionIndex..". "..optionControl.optionText)
+        if (savedVars.addNumberPrefix) then
+            -- Add number prefix to static options.
+            optionControl:SetText(optionIndex..". "..optionControl.optionText)
 
-        -- Some options - like Flee - have a callback on update to
-        -- increment the time you have left to select that option,
-        -- so we need to hook after that and add our prefix.
-        local optionUpdateHandler = optionControl:GetHandler("OnUpdate")
-        if (optionUpdateHandler ~= nil) then
-            local newUpdateHandler = function(...)
-                optionUpdateHandler(...)
-                optionControl:SetText(optionIndex..". "..optionControl:GetText())
+            -- Some options - like Flee - have a callback on update to
+            -- increment the time you have left to select that option,
+            -- so we need to hook after that and add our prefix.
+            local optionUpdateHandler = optionControl:GetHandler("OnUpdate")
+            if (optionUpdateHandler ~= nil) then
+                local newUpdateHandler = function(...)
+                    optionUpdateHandler(...)
+                    optionControl:SetText(optionIndex..". "..optionControl:GetText())
+                end
+                optionControl:SetHandler("OnUpdate", newUpdateHandler)
             end
-            optionControl:SetHandler("OnUpdate", newUpdateHandler)
         end
 
-        -- Always flag Goodbye as "seen before" unless you're under arrest, because then it becomes the Flee option.
         if (savedVars.goodbyeAlwaysSeen) then
+            -- Always flag Goodbye as "seen before" unless you're under arrest, because then it becomes the Flee option.
             if (optionControl.optionType == CHATTER_GOODBYE and not IsUnderArrest()) then
                 optionControl.chosenBefore = true
                 optionControl:SetColor(chosenBeforeColor:UnpackRGBA())
@@ -108,6 +110,7 @@ local keepLockedCamera = {
 local defaultSavedVars = {
     unlockCamera = true,
     goodbyeAlwaysSeen = true,
+    addNumberPrefix = true,
 }
 
 local function onAddOnLoaded(event, addOnName)
