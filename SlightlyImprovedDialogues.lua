@@ -18,7 +18,7 @@ local backgroundOffsetX = -40 -- was -10.
 local backgroundHeight = 120 -- stayed the same.
 
 -- The dialogue options get updated everytime there's a new dialogue, we so hook after this method and reapply our changes.
-local function hookInteractionPopulateChatterOption() 
+local function hookInteractionPopulateChatterOption(savedVars) 
     local populateChatterOption = INTERACTION.PopulateChatterOption
     function INTERACTION:PopulateChatterOption(...)
 
@@ -44,9 +44,11 @@ local function hookInteractionPopulateChatterOption()
         end
 
         -- Always flag Goodbye as "seen before" unless you're under arrest, because then it becomes the Flee option.
-        if (optionControl.optionType == CHATTER_GOODBYE and not IsUnderArrest()) then
-            optionControl.chosenBefore = true
-            optionControl:SetColor(chosenBeforeColor:UnpackRGBA())
+        if (savedVars.goodbyeAlwaysSeen) then
+            if (optionControl.optionType == CHATTER_GOODBYE and not IsUnderArrest()) then
+                optionControl.chosenBefore = true
+                optionControl:SetColor(chosenBeforeColor:UnpackRGBA())
+            end
         end
     end
 end
@@ -147,8 +149,8 @@ local function onAddOnLoaded(event, addOnName)
         ZO_InteractWindowTargetAreaTitle:SetFont("ZoFontCallout")
 
         -- Hook up.
+        hookInteractionPopulateChatterOption(savedVars)
         hookInteractionSelectChatterOptionByIndex()
-        hookInteractionPopulateChatterOption()
 
         -- Unlock camera on interaction.
         local function onGameCameraDeactivated()
