@@ -25,16 +25,28 @@ local function hookInteractionPopulateChatterOption()
         -- Invoke the original method.
         populateChatterOption(self, ...)
 
-        local index = ...
-        local option = INTERACTION.optionControls[index]
+        local optionIndex = ...
+        local optionControl = INTERACTION.optionControls[optionIndex]
 
-        -- Add number prefix.
-        option:SetText(index..". "..option:GetText())
+        -- Add number prefix to static options.
+        optionControl:SetText(optionIndex..". "..optionControl.optionText)
 
-        -- Always flag Goodbye as "seen before".
-        if (option.optionType == CHATTER_GOODBYE) then
-            option.chosenBefore = true
-            option:SetColor(chosenBeforeColor:UnpackRGBA())
+        -- Some options - like Flee - have a callback on update to
+        -- increment the time you have left to select that option,
+        -- so we need to hook after that and add our prefix.
+        local optionUpdateHandler = optionControl:GetHandler("OnUpdate")
+        if (optionUpdateHandler ~= nil) then
+            local newUpdateHandler = function(...)
+                optionUpdateHandler(...)
+                optionControl:SetText(optionIndex..". "..optionControl:GetText())
+            end
+            optionControl:SetHandler("OnUpdate", newUpdateHandler)
+        end
+
+        -- Always flag Goodbye as "seen before" unless you're under arrest, because then it becomes the Flee option.
+        if (optionControl.optionType == CHATTER_GOODBYE and not IsUnderArrest()) then
+            optionControl.chosenBefore = true
+            optionControl:SetColor(chosenBeforeColor:UnpackRGBA())
         end
     end
 end
@@ -43,8 +55,8 @@ end
 -- In these cases we skip the second press, since there's no point in confirming our only option.
 local function countImportantChatterOptions()
     local count = 0
-    for index, label in ipairs(INTERACTION.optionControls) do
-        if label.isImportant then
+    for optionIndex, optionControl in ipairs(INTERACTION.optionControls) do
+        if optionControl.isImportant then
             count = count + 1
         end
     end
@@ -81,6 +93,7 @@ local function hookInteractionSelectChatterOptionByIndex()
         end
     end
 end
+
 
 local keepLockedCamera = {
     [INTERACTION_CRAFT] = true,
