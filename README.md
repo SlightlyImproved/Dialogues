@@ -6,8 +6,8 @@
 
 1. Give more breathing space for the text.
 2. Change the highlight (hover) effect on the conversation options.
-3. Display the conversation option numbers.
-4. Remove the dashes and make the target name more prominent.
+3. Optionally display the conversation option numbers.
+4. Remove the dashes and make the target's name more prominent.
 
 ## Change log
 
