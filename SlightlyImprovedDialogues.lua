@@ -18,10 +18,9 @@ local backgroundOffsetX = -40 -- was -10.
 local backgroundHeight = 120 -- stayed the same.
 
 -- The dialogue options get updated everytime there's a new dialogue, we so hook after this method and reapply our changes.
-local function hookInteractionPopulateChatterOption(savedVars) 
-    local populateChatterOption = INTERACTION.PopulateChatterOption
-    function INTERACTION:PopulateChatterOption(...)
-
+local function hookInteractionPopulateChatterOption(savedVars)
+    local populateChatterOption = SlowDialogsGlobal and SlowDialogsGlobal.oldOption or INTERACTION.PopulateChatterOption;
+    local func = function(self, ...)
         -- Invoke the original method.
         populateChatterOption(self, ...)
 
@@ -52,6 +51,11 @@ local function hookInteractionPopulateChatterOption(savedVars)
                 optionControl:SetColor(chosenBeforeColor:UnpackRGBA())
             end
         end
+    end
+    if SlowDialogsGlobal then
+        SlowDialogsGlobal.oldOption = func;
+    else
+        INTERACTION.PopulateChatterOption = func;
     end
 end
 
