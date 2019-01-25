@@ -4,8 +4,8 @@
 local NAMESPACE = "SlightlyImprovedDialogues"
 
 -- Uncomment to prevent debug messages
--- local function d()  end
--- local function df() end
+local function d()  end
+local function df() end
 
 -- See esoui/ingame/interactwindow/keyboard/interactwindow_keyboard.lua:2
 local chatterOptionIndent = 30
