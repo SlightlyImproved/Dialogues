@@ -17,41 +17,40 @@ local chosenBeforeColor = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE
 local backgroundOffsetX = -40 -- was -10.
 local backgroundHeight = 120 -- stayed the same.
 
--- The dialogue options get updated everytime there's a new dialogue, we so hook after this method and reapply our changes.
-local function hookInteractionPopulateChatterOption(savedVars) 
-    local populateChatterOption = INTERACTION.PopulateChatterOption
-    function INTERACTION:PopulateChatterOption(...)
+-- Since GetChatterOptionData doesn't provide an index
+-- for the chatter option we keep count ourselves.
+-- No, optionIndex is NOT a number. Don't ask me why.
+local chatterOptionCount = 1
+
+-- Intercept the method that prepares conversation data for the UI.
+local function hookInteractionGetChatterOptionData(savedVars)
+    local getChatterOptionData = INTERACTION.GetChatterOptionData
+    function INTERACTION:GetChatterOptionData(...)
 
         -- Invoke the original method.
-        populateChatterOption(self, ...)
+        local chatterData = getChatterOptionData(self, ...)
 
-        local optionIndex = ...
-        local optionControl = INTERACTION.optionControls[optionIndex]
+        -- Bail early if it's moot.
+        if (not chatterData.optionText) or (not chatterData.optionType) then
+            return chatterData
+        end
 
+        -- Add number prefix to static options.
         if (savedVars.addNumberPrefix) then
-            -- Add number prefix to static options.
-            optionControl:SetText(optionIndex..". "..optionControl.optionText)
-
-            -- Some options - like Flee - have a callback on update to
-            -- increment the time you have left to select that option,
-            -- so we need to hook after that and add our prefix.
-            local optionUpdateHandler = optionControl:GetHandler("OnUpdate")
-            if (optionUpdateHandler ~= nil) then
-                local newUpdateHandler = function(...)
-                    optionUpdateHandler(...)
-                    optionControl:SetText(optionIndex..". "..optionControl:GetText())
-                end
-                optionControl:SetHandler("OnUpdate", newUpdateHandler)
-            end
+            chatterData.optionText = chatterOptionCount..". "..chatterData.optionText
+            chatterOptionCount = chatterOptionCount + 1
         end
 
+        -- Always flag Goodbye as "seen before" unless you're
+        -- under arrest, because then its the Flee option.
         if (savedVars.goodbyeAlwaysSeen) then
-            -- Always flag Goodbye as "seen before" unless you're under arrest, because then it becomes the Flee option.
-            if (optionControl.optionType == CHATTER_GOODBYE and not IsUnderArrest()) then
-                optionControl.chosenBefore = true
-                optionControl:SetColor(chosenBeforeColor:UnpackRGBA())
+            if (chatterData.optionType == CHATTER_GOODBYE and not IsUnderArrest()) then
+                chatterData.chosenBefore = true
             end
         end
+
+        -- Return the modified data.
+        return chatterData
     end
 end
 
@@ -75,8 +74,8 @@ local function exitInteractionCurrentMouseLabel()
     end
 end
 
--- To add the "press again to confirm" when selecting important options with the keyboard we intercept 
--- this method and instead of making the selection right away we first highlight the option by emulating 
+-- To add the "press again to confirm" when selecting important options with the keyboard we intercept
+-- this method and instead of making the selection right away we first highlight the option by emulating
 -- a "mouse over" and only if it's already highlighted we let it proceed as usual.
 local function hookInteractionSelectChatterOptionByIndex()
     local selectChatterOptionByIndex = INTERACTION.SelectChatterOptionByIndex
@@ -97,7 +96,6 @@ local function hookInteractionSelectChatterOptionByIndex()
         end
     end
 end
-
 
 local keepLockedCamera = {
     [INTERACTION_CRAFT] = true,
@@ -152,7 +150,7 @@ local function onAddOnLoaded(event, addOnName)
         ZO_InteractWindowTargetAreaTitle:SetFont("ZoFontCallout")
 
         -- Hook up.
-        hookInteractionPopulateChatterOption(savedVars)
+        hookInteractionGetChatterOptionData(savedVars)
         hookInteractionSelectChatterOptionByIndex()
 
         -- Unlock camera on interaction.
@@ -162,6 +160,12 @@ local function onAddOnLoaded(event, addOnName)
             end
         end
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_GAME_CAMERA_DEACTIVATED, onGameCameraDeactivated)
+
+        -- Reset the count when entering a new conversation.
+        local function onChatterBegin()
+            chatterOptionCount = 1
+        end
+        EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CHATTER_BEGIN, onChatterBegin)
 
         -- Fire a callback so code can hook after this add-on.
         CALLBACK_MANAGER:FireCallbacks(NAMESPACE.."_OnAddOnLoaded", savedVars)
