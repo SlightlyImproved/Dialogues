@@ -18,19 +18,19 @@ local options =
 {
     {
         type = "checkbox",
-        name = "Unlocked camera",
+        name = "Unlocked Camera",
         tooltip = "Prevent the game from locking the camera on the NPC you're talking to.",
         getFunc = function() return settings.unlockCamera end,
         setFunc = function(value) settings.unlockCamera = value end,
     }, {
         type = "checkbox",
-        name = "Goodbye greyed out by default",
+        name = "Goodbye Greyed out by Default",
         tooltip = "Make the goodbye option always appear faded.",
         getFunc = function() return settings.goodbyeAlwaysSeen end,
         setFunc = function(value) settings.goodbyeAlwaysSeen = value end,
     }, {
         type = "checkbox",
-        name = "Prefix with option number",
+        name = "Prefix Options with their Numbers",
         tooltip = "Add the corresponding number before each option in the dialogue.",
         getFunc = function() return settings.addNumberPrefix end,
         setFunc = function(value) settings.addNumberPrefix = value end,
