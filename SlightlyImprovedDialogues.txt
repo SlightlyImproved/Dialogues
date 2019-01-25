@@ -1,6 +1,7 @@
 ## APIVersion: 100025
 ## Title: Slightly Improved™ Dialogues
 ## Version: 1.4.0
+## AddOnVersion: 140
 ## License: MIT
 ## SavedVariables: SlightlyImprovedDialogues_SavedVars
 ## DependsOn: LibAddonMenu-2.0
