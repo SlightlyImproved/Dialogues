@@ -35,6 +35,10 @@ local function hookInteractionGetChatterOptionData(savedVars)
             return chatterData
         end
 
+        d("Valid chatter option")
+        d(chatterData)
+        d("---")
+
         -- Add number prefix to static options.
         if (savedVars.addNumberPrefix) then
             chatterData.optionText = chatterOptionCount..". "..chatterData.optionText
@@ -53,6 +57,23 @@ local function hookInteractionGetChatterOptionData(savedVars)
         return chatterData
     end
 end
+
+-- Tried:
+-- - Listening to EVENT_CONVERSATION_UPDATED event;
+-- - Hooking into INTERACTION.UpdateChatterOptions;
+-- - Hooking into INTERACTION.PopulateChatterOptions;
+-- But all the above miss some edge case where the conversation is updated
+-- but these methods aren't called. Though I finanly found one that is
+-- always called.
+local function hookInteractionInitializeInteractWindow(savedVars)
+    local initializeInteractWindow = INTERACTION.InitializeInteractWindow
+    function INTERACTION:InitializeInteractWindow(...)
+        df("initializeInteractWindow called at %d", GetTimeStamp())
+        chatterOptionCount = 1
+        initializeInteractWindow(self, ...)
+    end
+end
+
 
 -- For some reason there are times when there's only one important option.
 -- In these cases we skip the second press, since there's no point in confirming our only option.
@@ -150,6 +171,7 @@ local function onAddOnLoaded(event, addOnName)
         ZO_InteractWindowTargetAreaTitle:SetFont("ZoFontCallout")
 
         -- Hook up.
+        hookInteractionInitializeInteractWindow()
         hookInteractionGetChatterOptionData(savedVars)
         hookInteractionSelectChatterOptionByIndex()
 
@@ -160,12 +182,6 @@ local function onAddOnLoaded(event, addOnName)
             end
         end
         EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_GAME_CAMERA_DEACTIVATED, onGameCameraDeactivated)
-
-        -- Reset the count when entering a new conversation.
-        local function onChatterBegin()
-            chatterOptionCount = 1
-        end
-        EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_CHATTER_BEGIN, onChatterBegin)
 
         -- Fire a callback so code can hook after this add-on.
         CALLBACK_MANAGER:FireCallbacks(NAMESPACE.."_OnAddOnLoaded", savedVars)
