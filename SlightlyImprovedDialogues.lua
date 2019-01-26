@@ -118,16 +118,7 @@ local function hookInteractionSelectChatterOptionByIndex()
     end
 end
 
-local keepLockedCamera = {
-    [INTERACTION_CRAFT] = true,
-    [INTERACTION_DYE_STATION] = true,
-    [INTERACTION_LOCKPICK] = true,
-    [INTERACTION_SIEGE] = true,
-    [INTERACTION_FURNITURE] = true,
-}
-
 local defaultSavedVars = {
-    unlockCamera = true,
     goodbyeAlwaysSeen = true,
     addNumberPrefix = true,
 }
@@ -174,14 +165,6 @@ local function onAddOnLoaded(event, addOnName)
         hookInteractionInitializeInteractWindow()
         hookInteractionGetChatterOptionData(savedVars)
         hookInteractionSelectChatterOptionByIndex()
-
-        -- Unlock camera on interaction.
-        local function onGameCameraDeactivated()
-            if (savedVars.unlockCamera and not keepLockedCamera[GetInteractionType()]) then
-                SetInteractionUsingInteractCamera(false)
-            end
-        end
-        EVENT_MANAGER:RegisterForEvent(NAMESPACE, EVENT_GAME_CAMERA_DEACTIVATED, onGameCameraDeactivated)
 
         -- Fire a callback so code can hook after this add-on.
         CALLBACK_MANAGER:FireCallbacks(NAMESPACE.."_OnAddOnLoaded", savedVars)
