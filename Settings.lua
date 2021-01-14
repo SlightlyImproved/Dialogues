@@ -34,7 +34,7 @@ local options =
 CALLBACK_MANAGER:RegisterCallback(NAMESPACE.."_OnAddOnLoaded", function(savedVars)
     settings = savedVars
 
-    local LAM = LibStub("LibAddonMenu-2.0")
+    local LAM = LibAddonMenu2 or LibStub("LibAddonMenu-2.0")
     LAM:RegisterAddonPanel(NAMESPACE, panel)
     LAM:RegisterOptionControls(NAMESPACE, options)
 end)
